@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carrinho Serena</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #ccc;
+    }
+    h1 {
+      color: #5a8f7b;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .produto {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .produto button {
+      background-color: #5a8f7b;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .produto button:hover {
+      background-color: #49735d;
+    }
+    #carrinhoResumo {
+      margin-top: 25px;
+      background: #f3f3f3;
+      padding: 15px;
+      border-radius: 5px;
+      white-space: pre-line;
+      font-size: 14px;
+    }
+    #btnWhatsApp {
+      margin-top: 25px;
+      width: 100%;
+      background-color: #25d366;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 17px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    #btnWhatsApp:hover {
+      background-color: #1ebe57;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛁 Carrinho Serena</h1>
+
+  <div id="listaProdutos">
+    <!-- Produtos serão inseridos aqui pelo JavaScript -->
+  </div>
+
+  <div id="carrinhoResumo">Nenhum produto adicionado ainda.</div>
+
+  <button id="btnWhatsApp" onclick="enviarPedidoWhatsApp()">Finalizar pedido no WhatsApp</button>
+
+  <script>
+    const produtos = [
+      "Sabonete de Anil", "Sabonete de Laranja", "Sabonete de Coco",
+      "Sabonete de Café e Canela", "Sabonete de Barbosa", "Sabonete de Barbatimão",
+      "Sabonete de Limpeza Energética", "Sabonete de Rosa Mosqueta", "Sabonete de Erva Doce",
+      "Sabonete de Lavanda", "Sabonete de Rosas Vermelhas", "Sabonete de Alecrim",
+      "Sabonete de Argila Rosa", "Sabonete de Dolomita", "Sabonete de Argila Roxa e Lavanda",
+      "Sabonete de Maracujá", "Sabonete de Mel e Açafrão", "Sabonete de Chocolate",
+      "Sabonete de Amêndoas", "Sabonete de Pimenta Rosa", "Sabonete Coração",
+      "Sabonete de Argila Rosa e Vermelha"
+    ];
+
+    const precoFixo = 12;
+    const carrinho = {};
+
+    const lista = document.getElementById('listaProdutos');
+
+    produtos.forEach(nome => {
+      const linha = document.createElement('div');
+      linha.className = 'produto';
+      linha.innerHTML = `
+        <span>${nome} (R$${precoFixo})</span>
+        <button onclick="adicionarProduto('${nome}')">Adicionar</button>
+      `;
+      lista.appendChild(linha);
+    });
+
+    function adicionarProduto(nome) {
+      if (carrinho[nome]) {
+        carrinho[nome].quantidade++;
+      } else {
+        carrinho[nome] = { preco: precoFixo, quantidade: 1 };
+      }
+      atualizarResumo();
+    }
+
+    function atualizarResumo() {
+      const resumo = [];
+      let total = 0;
+      for (const nome in carrinho) {
+        const item = carrinho[nome];
+        resumo.push(`${nome}: ${item.quantidade} x R$${item.preco} = R$${item.quantidade * item.preco}`);
+        total += item.quantidade * item.preco;
+      }
+      const resumoDiv = document.getElementById('carrinhoResumo');
+      resumoDiv.textContent = resumo.length
+        ? resumo.join('\n') + `\n\nTotal: R$${total}`
+        : 'Nenhum produto adicionado ainda.';
+    }
+
+    function enviarPedidoWhatsApp() {
+      if (Object.keys(carrinho).length === 0) {
+        alert('Por favor, adicione pelo menos um produto.');
+        return;
+      }
+
+      let mensagem = 'Olá! Gostaria de fazer um pedido:\n';
+      let total = 0;
+
+      for (const nome in carrinho) {
+        const item = carrinho[nome];
+        mensagem += `- ${nome}: ${item.quantidade} x R$${item.preco} = R$${item.quantidade * item.preco}\n`;
+        total += item.quantidade * item.preco;
+      }
+
+      mensagem += `\nTotal: R$${total}`;
+
+      // Substitua pelo seu número de WhatsApp
+      const numero = '5511999999999'; // <-- Altere aqui
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+
+</body>
+</html>
